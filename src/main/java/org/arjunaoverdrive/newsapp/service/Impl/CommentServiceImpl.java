@@ -13,6 +13,7 @@ import org.arjunaoverdrive.newsapp.service.NewsService;
 import org.arjunaoverdrive.newsapp.service.user.UserService;
 import org.arjunaoverdrive.newsapp.utils.BeanUtils;
 import org.arjunaoverdrive.newsapp.web.aop.EditableByAuthor;
+import org.arjunaoverdrive.newsapp.web.aop.StillCanEdit;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
@@ -53,10 +54,12 @@ public class CommentServiceImpl implements CommentService {
         }catch (Exception e){
             throw new CannotSaveEntityException(e.getMessage());
         }
+        log.debug("Created comment {}.", comment);
         return comment;
     }
 
     @EditableByAuthor
+    @StillCanEdit
     @Override
     public Comment updateComment(Comment comment) {
         log.debug("Updating comment {}...", comment);
@@ -71,6 +74,7 @@ public class CommentServiceImpl implements CommentService {
             throw new CannotSaveEntityException(e.getMessage());
         }
 
+        log.debug("Updated comment {}.", comment);
         return fromDB;
     }
 

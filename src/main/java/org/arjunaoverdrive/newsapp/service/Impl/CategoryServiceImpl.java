@@ -28,16 +28,16 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category findCategoryById(Integer id) {
-        log.debug("Getting category with id {}.", id);
+        log.debug("Getting category with id {}...", id);
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        MessageFormat.format("Category with id {0} not found or doesn't exist", id)
+                        MessageFormat.format("Category with id {0} not found.", id)
                 ));
     }
 
     @Override
     public Category createCategory(Category category) {
-        log.debug("Saving category {}.", category);
+        log.debug("Saving category {}...", category);
         try{
             category = categoryRepository.save(category);
         }catch (Exception e){
@@ -50,7 +50,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category updateCategory(Category category) {
         Category fromDb = findCategoryById(category.getId());
-        log.debug("Updating category {}.", fromDb);
+        log.debug("Updating category {}...", fromDb);
         BeanUtils.copyNonNullProperties(category, fromDb);
         try {
             fromDb = categoryRepository.save(fromDb);
@@ -64,7 +64,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void deleteCategoryById(Integer id) {
         Category toDelete = findCategoryById(id);
-        log.debug("Deleting category {}", toDelete);
+        log.debug("Deleting category {}...", toDelete);
         categoryRepository.delete(toDelete);
+        log.debug("Deleted category {}.", toDelete);
     }
 }

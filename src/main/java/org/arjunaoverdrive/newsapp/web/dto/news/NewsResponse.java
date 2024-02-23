@@ -7,7 +7,7 @@ import org.arjunaoverdrive.newsapp.web.dto.category.CategoryResponse;
 import org.arjunaoverdrive.newsapp.web.dto.comment.CommentResponse;
 import org.arjunaoverdrive.newsapp.web.dto.user.UserResponse;
 
-import java.util.HashSet;
+import java.time.Instant;
 import java.util.Set;
 
 @Data
@@ -19,5 +19,7 @@ public class NewsResponse {
     private String heading;
     private UserResponse author;
     private CategoryResponse category;
+    private Instant createdAt;
+    private Instant updatedAt;
     private Set<CommentResponse> comments;
 }

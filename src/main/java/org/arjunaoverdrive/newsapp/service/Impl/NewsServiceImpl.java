@@ -15,9 +15,8 @@ import org.arjunaoverdrive.newsapp.service.NewsService;
 import org.arjunaoverdrive.newsapp.service.user.UserService;
 import org.arjunaoverdrive.newsapp.utils.BeanUtils;
 import org.arjunaoverdrive.newsapp.web.aop.EditableByAuthor;
+import org.arjunaoverdrive.newsapp.web.aop.StillCanEdit;
 import org.arjunaoverdrive.newsapp.web.dto.news.NewsFilter;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -64,10 +63,13 @@ public class NewsServiceImpl implements NewsService {
             log.warn(e.getMessage());
             throw new CannotSaveEntityException(e.getMessage());
         }
+
+        log.debug("Created news {}.", news);
         return news;
     }
 
     @EditableByAuthor
+    @StillCanEdit
     @Override
     public News updateNewsById(News news) {
         log.debug("Updating news {}...", news);
@@ -81,6 +83,7 @@ public class NewsServiceImpl implements NewsService {
             throw new CannotSaveEntityException(e.getMessage());
         }
 
+        log.debug("Updated news {}.", news);
         return news;
     }
 

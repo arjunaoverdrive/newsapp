@@ -2,7 +2,6 @@ package org.arjunaoverdrive.newsapp.web.aop;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.arjunaoverdrive.newsapp.exception.CannotEditEntityException;
 import org.arjunaoverdrive.newsapp.model.AppUser;
 import org.arjunaoverdrive.newsapp.model.Authorable;
@@ -20,8 +19,7 @@ import java.text.MessageFormat;
 @Aspect
 @Component
 @RequiredArgsConstructor
-@Slf4j
-public class EditingAspect {
+public class EditingByAuthorAspect {
 
     private final UserService userService;
 

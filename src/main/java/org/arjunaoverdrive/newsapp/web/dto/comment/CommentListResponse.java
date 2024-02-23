@@ -13,5 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class CommentListResponse {
+    @Builder.Default
     private List<CommentResponse> comments = new ArrayList<>();
 }

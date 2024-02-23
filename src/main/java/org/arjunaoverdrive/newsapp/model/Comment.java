@@ -2,6 +2,10 @@ package org.arjunaoverdrive.newsapp.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.Instant;
 
 @Entity
 @Getter
@@ -27,6 +31,14 @@ public class Comment implements Authorable{
     @ManyToOne
     @JoinColumn(name = "news_id", referencedColumnName = "id")
     private News news;
+
+    @Column(name = "created_at")
+    @CreationTimestamp
+    private Instant createdAt;
+
+    @Column(name = "updatedAt")
+    @UpdateTimestamp
+    private Instant updatedAt;
 
     @Override
     public String getClassName() {

@@ -1,10 +1,7 @@
 package org.arjunaoverdrive.newsapp.web.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.arjunaoverdrive.newsapp.exception.CannotEditEntityException;
-import org.arjunaoverdrive.newsapp.exception.CannotSaveEntityException;
-import org.arjunaoverdrive.newsapp.exception.EntityNotFoundException;
-import org.arjunaoverdrive.newsapp.exception.UserNotFoundException;
+import org.arjunaoverdrive.newsapp.exception.*;
 import org.arjunaoverdrive.newsapp.web.dto.ErrorResponse;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -46,6 +43,14 @@ public class ExceptionController {
 
     @ExceptionHandler(CannotEditEntityException.class)
     public ResponseEntity<ErrorResponse> cannotEditEntity(CannotEditEntityException e){
+        log.warn(e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(UpdateStateException.class)
+    public ResponseEntity<ErrorResponse> tooLateTooUpdate(UpdateStateException e){
         log.warn(e.getMessage());
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
