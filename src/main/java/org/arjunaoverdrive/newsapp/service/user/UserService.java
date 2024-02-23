@@ -8,13 +8,13 @@ import java.util.List;
 
 public interface UserService {
 
-    List<AppUser> findAll(Pageable pageable);
+    List<AppUser> findAllUsers(Pageable pageable);
 
-    AppUser create(AppUser appUser);
+    AppUser createUser(AppUser appUser);
 
     AppUser findUserById(Long id);
 
-    AppUser update(AppUser appUser);
+    AppUser updateUser(AppUser appUser);
 
     void deleteUserById(Long id);
 }

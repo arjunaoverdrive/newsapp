@@ -23,13 +23,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public List<AppUser> findAll(Pageable pageable) {
+    public List<AppUser> findAllUsers(Pageable pageable) {
         log.debug("Getting all users.");
         return userRepository.findAll(pageable).getContent();
     }
 
     @Override
-    public AppUser create(AppUser appUser) {
+    public AppUser createUser(AppUser appUser) {
         log.debug("Saving user {}", appUser);
         AppUser user;
         try {
@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AppUser update(AppUser appUser) {
+    public AppUser updateUser(AppUser appUser) {
         log.debug("Updating user {}", appUser);
         AppUser fromDb = findUserById(appUser.getId());
         BeanUtils.copyNonNullProperties(appUser, fromDb);

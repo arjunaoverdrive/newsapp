@@ -1,17 +1,16 @@
-package org.arjunaoverdrive.newsapp.web.dto;
+package org.arjunaoverdrive.newsapp.web.dto.category;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class CategoryResponse {
     private Integer id;
     private String name;
-    private Set<NewsResponse> news = new HashSet<>();
+    private Integer news;
 }

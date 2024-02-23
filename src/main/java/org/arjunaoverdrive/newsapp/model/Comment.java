@@ -9,7 +9,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Comment {
+@EqualsAndHashCode
+public class Comment implements Authorable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comment_seq_generator")
@@ -27,4 +28,8 @@ public class Comment {
     @JoinColumn(name = "news_id", referencedColumnName = "id")
     private News news;
 
+    @Override
+    public String getClassName() {
+        return this.getClass().getSimpleName();
+    }
 }

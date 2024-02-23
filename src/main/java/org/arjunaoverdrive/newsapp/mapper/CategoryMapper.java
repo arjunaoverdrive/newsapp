@@ -1,10 +1,11 @@
 package org.arjunaoverdrive.newsapp.mapper;
 
 import org.arjunaoverdrive.newsapp.model.Category;
-import org.arjunaoverdrive.newsapp.web.dto.CategoryListResponse;
-import org.arjunaoverdrive.newsapp.web.dto.CategoryRequest;
-import org.arjunaoverdrive.newsapp.web.dto.CategoryResponse;
+import org.arjunaoverdrive.newsapp.web.dto.category.CategoryListResponse;
+import org.arjunaoverdrive.newsapp.web.dto.category.CategoryRequest;
+import org.arjunaoverdrive.newsapp.web.dto.category.CategoryResponse;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public interface CategoryMapper {
 
     Category toCategory(Integer id, CategoryRequest request);
 
+    @Mapping(target = "news", expression = "java(category.getNews().size())")
     CategoryResponse toCategoryResponse(Category category);
 
    default CategoryListResponse toCategoryListResponse(List<Category> categories){

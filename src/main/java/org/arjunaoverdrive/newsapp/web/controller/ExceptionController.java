@@ -1,6 +1,7 @@
 package org.arjunaoverdrive.newsapp.web.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.arjunaoverdrive.newsapp.exception.CannotEditEntityException;
 import org.arjunaoverdrive.newsapp.exception.CannotSaveEntityException;
 import org.arjunaoverdrive.newsapp.exception.EntityNotFoundException;
 import org.arjunaoverdrive.newsapp.exception.UserNotFoundException;
@@ -43,6 +44,13 @@ public class ExceptionController {
                 .body(new ErrorResponse(e.getMessage()));
     }
 
+    @ExceptionHandler(CannotEditEntityException.class)
+    public ResponseEntity<ErrorResponse> cannotEditEntity(CannotEditEntityException e){
+        log.warn(e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse(e.getMessage()));
+    }
 
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

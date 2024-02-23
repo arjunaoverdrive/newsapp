@@ -1,6 +1,7 @@
-package org.arjunaoverdrive.newsapp.web.dto;
+package org.arjunaoverdrive.newsapp.web.dto.comment;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryListResponse {
-    List<CategoryResponse> categories = new ArrayList<>();
+@Builder
+public class CommentListResponse {
+    private List<CommentResponse> comments = new ArrayList<>();
 }

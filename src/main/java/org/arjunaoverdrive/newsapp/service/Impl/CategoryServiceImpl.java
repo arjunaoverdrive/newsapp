@@ -21,13 +21,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     @Override
-    public List<Category> findAll(Pageable pageable) {
+    public List<Category> findAllCategories(Pageable pageable) {
         log.debug("Getting all categories...");
         return categoryRepository.findAll(pageable).getContent();
     }
 
     @Override
-    public Category findById(Integer id) {
+    public Category findCategoryById(Integer id) {
         log.debug("Getting category with id {}.", id);
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -36,7 +36,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category create(Category category) {
+    public Category createCategory(Category category) {
         log.debug("Saving category {}.", category);
         try{
             category = categoryRepository.save(category);
@@ -48,8 +48,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category update(Category category) {
-        Category fromDb = findById(category.getId());
+    public Category updateCategory(Category category) {
+        Category fromDb = findCategoryById(category.getId());
         log.debug("Updating category {}.", fromDb);
         BeanUtils.copyNonNullProperties(category, fromDb);
         try {
@@ -62,8 +62,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void deleteById(Integer id) {
-        Category toDelete = findById(id);
+    public void deleteCategoryById(Integer id) {
+        Category toDelete = findCategoryById(id);
         log.debug("Deleting category {}", toDelete);
         categoryRepository.delete(toDelete);
     }

@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -13,6 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @ToString
+@EqualsAndHashCode
 public class AppUser {
 
     @Id
@@ -34,9 +36,34 @@ public class AppUser {
     private String password;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<News> newsSet;
+    @Builder.Default
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<News> newsSet = new HashSet<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
     @Builder.Default
+    @EqualsAndHashCode.Exclude
     private Set<Comment> comments = new HashSet<>();
+
+    public void addNews(News news){
+        newsSet.add(news);
+    }
+
+    public void removeNews(Long newsId){
+        newsSet = newsSet.stream()
+                .takeWhile(n -> !n.getId().equals(newsId))
+                .collect(Collectors.toSet());
+    }
+
+    public void addComment(Comment comment){
+        comments.add(comment);
+    }
+
+    public void removeComment(Long commentId){
+        comments = comments.stream()
+                .takeWhile(c -> !c.getId().equals(commentId))
+                .collect(Collectors.toSet());
+    }
 }
