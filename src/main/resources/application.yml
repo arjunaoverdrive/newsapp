@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5433/newsapp_db}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/newsapp_db}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
@@ -14,9 +14,21 @@ spring:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 server:
   port: 8050
 
 logging:
   level:
     root: INFO
+
+app:
+  jwt:
+    secret: "fds124gkjkrEEe4512"
+    tokenTTL: 100m
+    refreshTokenTTL: 1440m
