@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentRequest {
-
+public class CommentUpdateRequest {
     private String text;
     private Long newsId;
 }

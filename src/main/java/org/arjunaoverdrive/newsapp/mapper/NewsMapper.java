@@ -19,8 +19,6 @@ public interface NewsMapper {
 
     News toNews(NewsRequest request);
 
-    News toNews(Long id, NewsRequest request);
-
     NewsResponse toNewsResponse(News news);
 
     @Mapping(target = "comments", expression = "java(news.getComments().size())")

@@ -25,11 +25,11 @@ public class Comment implements Authorable{
     private String text;
 
     @ManyToOne
-    @JoinColumn(name = "author_id", referencedColumnName = "id")
+    @JoinColumn(name = "author_id", referencedColumnName = "id", nullable = false, updatable = false)
     private AppUser author;
 
     @ManyToOne
-    @JoinColumn(name = "news_id", referencedColumnName = "id")
+    @JoinColumn(name = "news_id", referencedColumnName = "id", nullable = false, updatable = false)
     private News news;
 
     @Column(name = "created_at")
@@ -40,8 +40,4 @@ public class Comment implements Authorable{
     @UpdateTimestamp
     private Instant updatedAt;
 
-    @Override
-    public String getClassName() {
-        return this.getClass().getSimpleName();
-    }
 }

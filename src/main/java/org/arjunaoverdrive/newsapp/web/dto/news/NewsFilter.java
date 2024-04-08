@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.arjunaoverdrive.newsapp.validation.NewsFilterValid;
+import org.arjunaoverdrive.newsapp.validation.annotations.NewsFilterValid;
 
 @Data
 @AllArgsConstructor

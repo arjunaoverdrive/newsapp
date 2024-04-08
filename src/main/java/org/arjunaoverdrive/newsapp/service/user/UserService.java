@@ -16,4 +16,6 @@ public interface UserService {
     AppUser updateUser(AppUser appUser);
 
     void deleteUserById(Long id);
+
+    AppUser findUserByCommentId(Long commentId);
 }

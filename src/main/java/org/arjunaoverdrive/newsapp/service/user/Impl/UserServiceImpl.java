@@ -6,9 +6,11 @@ import org.arjunaoverdrive.newsapp.dao.UserRepository;
 import org.arjunaoverdrive.newsapp.exception.CannotSaveEntityException;
 import org.arjunaoverdrive.newsapp.exception.UserNotFoundException;
 import org.arjunaoverdrive.newsapp.model.AppUser;
+import org.arjunaoverdrive.newsapp.service.CommentService;
 import org.arjunaoverdrive.newsapp.service.user.UserService;
 import org.arjunaoverdrive.newsapp.utils.BeanUtils;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
@@ -20,6 +22,8 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final CommentService commentService;
 
     @Override
     public List<AppUser> findAllUsers(Pageable pageable) {
@@ -32,6 +36,7 @@ public class UserServiceImpl implements UserService {
         log.debug("Saving user {}...", appUser);
         AppUser user;
         try {
+            appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
             user = userRepository.save(appUser);
         }catch (Exception e){
             throw new CannotSaveEntityException(e.getMessage());
@@ -69,5 +74,10 @@ public class UserServiceImpl implements UserService {
         log.debug("Deleting user {}...", toDelete);
         userRepository.delete(toDelete);
         log.debug("Deleted user {}.", toDelete);
+    }
+
+    @Override
+    public AppUser findUserByCommentId(Long commentId) {
+        return commentService.findById(commentId).getAuthor();
     }
 }

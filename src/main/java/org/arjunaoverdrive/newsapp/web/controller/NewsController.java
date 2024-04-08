@@ -15,6 +15,7 @@ import org.arjunaoverdrive.newsapp.web.dto.news.NewsFilter;
 import org.arjunaoverdrive.newsapp.web.dto.news.NewsListResponse;
 import org.arjunaoverdrive.newsapp.web.dto.news.NewsRequest;
 import org.arjunaoverdrive.newsapp.web.dto.news.NewsResponse;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -44,7 +45,7 @@ public class NewsController {
     )
     @GetMapping
     public ResponseEntity<NewsListResponse> findAll(
-            @PageableDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+            @PageableDefault(sort = "id", direction = Sort.Direction.ASC) @ParameterObject Pageable pageable) {
         return ResponseEntity.ok().body(newsMapper.toNewsListResponse(newsService.findAllNews(pageable)));
     }
 
@@ -69,7 +70,7 @@ public class NewsController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<NewsResponse> findNewsById(@PathVariable Long id) {
-        return ResponseEntity.ok().body(newsMapper.toNewsResponse(newsService.findNewsById(id)));
+        return ResponseEntity.ok().body(newsMapper.toNewsResponse(newsService.findById(id)));
     }
 
     @Operation(
@@ -148,10 +149,9 @@ public class NewsController {
             )
     })
     @PutMapping("/{id}")
-    public ResponseEntity<NewsResponse> updateNews(@PathVariable Long id, @RequestBody @Valid NewsRequest request,
-                                                   @RequestParam(name = "user") Long userId) {
+    public ResponseEntity<NewsResponse> updateNews(@PathVariable Long id, @RequestBody @Valid NewsRequest request) {
         return ResponseEntity.accepted()
-                .body(newsMapper.toNewsResponse(newsService.updateNewsById(newsMapper.toNews(id, request))));
+                .body(newsMapper.toNewsResponse(newsService.updateNewsById(id, newsMapper.toNews( request))));
     }
 
     @Operation(
@@ -170,8 +170,8 @@ public class NewsController {
             )
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteNews(@PathVariable Long id, @RequestParam("user") Long userId) {
-        newsService.deleteNewsById(id);
+    public ResponseEntity<Void> deleteNews(@PathVariable Long id) {
+        newsService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -4,6 +4,7 @@ package org.arjunaoverdrive.newsapp.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,7 +26,7 @@ public class Category {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     @ToString.Exclude
-    private Set<News> news;
+    private Set<News> news = new HashSet<>();
 
     public void addNews(News newsItem) {
         news.add(newsItem);

@@ -45,9 +45,9 @@ public class CommentController {
             )
     })
     @GetMapping("/{id}")
-    public ResponseEntity<CommentResponse> findCommentById(@PathVariable Long id){
+    public ResponseEntity<CommentResponse> findCommentById(@PathVariable Long id) {
         return ResponseEntity.ok()
-                .body(commentMapper.toCommentResponse(commentService.findCommentById(id)));
+                .body(commentMapper.toCommentResponse(commentService.findById(id)));
     }
 
     @Operation(
@@ -69,7 +69,7 @@ public class CommentController {
             )
     })
     @PostMapping
-    public ResponseEntity<CommentResponse> createComment(@RequestBody @Valid CommentRequest request){
+    public ResponseEntity<CommentResponse> createComment(@RequestBody @Valid CommentRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(commentMapper.toCommentResponse(commentService.createComment(commentMapper.toComment(request))));
     }
@@ -99,10 +99,9 @@ public class CommentController {
             )
     })
     @PutMapping("/{id}")
-    public ResponseEntity<CommentResponse> updateComment(@PathVariable Long id, @RequestBody @Valid CommentRequest request,
-                                                         @RequestParam ("user") Long userId){
+    public ResponseEntity<CommentResponse> updateComment(@PathVariable Long id, @RequestBody @Valid CommentRequest request) {
         return ResponseEntity.accepted()
-                .body(commentMapper.toCommentResponse(commentService.updateComment(commentMapper.toComment(id, request))));
+                .body(commentMapper.toCommentResponse(commentService.updateComment(id, commentMapper.toComment( request))));
     }
 
     @Operation(
@@ -121,8 +120,8 @@ public class CommentController {
             )
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long id, @RequestParam ("user") Long userId){
-        commentService.deleteComment(id);
+    public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
+        commentService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

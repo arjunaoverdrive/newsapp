@@ -12,8 +12,8 @@ import org.arjunaoverdrive.newsapp.model.Comment;
 import org.arjunaoverdrive.newsapp.model.News;
 import org.arjunaoverdrive.newsapp.service.CategoryService;
 import org.arjunaoverdrive.newsapp.service.NewsService;
-import org.arjunaoverdrive.newsapp.service.user.UserService;
 import org.arjunaoverdrive.newsapp.utils.BeanUtils;
+import org.arjunaoverdrive.newsapp.web.aop.CanDeleteEntity;
 import org.arjunaoverdrive.newsapp.web.aop.EditableByAuthor;
 import org.arjunaoverdrive.newsapp.web.aop.StillCanEdit;
 import org.arjunaoverdrive.newsapp.web.dto.news.NewsFilter;
@@ -22,6 +22,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,8 +32,8 @@ import java.util.List;
 public class NewsServiceImpl implements NewsService {
 
     private final NewsRepository newsRepository;
-    private final UserService userService;
     private final CategoryService categoryService;
+
     @Override
     public List<News> findAllNews(Pageable pageable) {
         log.debug("Getting page of news...");
@@ -40,26 +41,25 @@ public class NewsServiceImpl implements NewsService {
     }
 
     @Override
-    public News findNewsById(Long id) {
+    public News findById(Long id) {
         log.debug("Getting news by id {}...", id);
-        return newsRepository.findById(id)
+        News news = newsRepository.findById(id)
                 .orElseThrow(() ->
                         new EntityNotFoundException(MessageFormat.format("News with id {0} not found.", id))
                 );
+        return news;
     }
 
     @Override
     public News createNews(News news) {
         log.debug("Creating news {}...", news);
 
-        AppUser user = userService.findUserById(news.getAuthor().getId());
-        news.setAuthor(user);
-
         Category category = categoryService.findCategoryById(news.getCategory().getId());
         news.setCategory(category);
-        try{
-            news = newsRepository.save(news);
-        }catch (Exception e){
+
+        try {
+            news = newsRepository.saveAndFlush(news);
+        } catch (Exception e) {
             log.warn(e.getMessage());
             throw new CannotSaveEntityException(e.getMessage());
         }
@@ -68,18 +68,19 @@ public class NewsServiceImpl implements NewsService {
         return news;
     }
 
+    @Override
     @EditableByAuthor
     @StillCanEdit
-    @Override
-    public News updateNewsById(News news) {
+    public News updateNewsById(Long id, News news) {
         log.debug("Updating news {}...", news);
 
-        News fromDb = findNewsById(news.getId());
-        BeanUtils.copyNonNullProperties(news,fromDb);
+        News fromDb = findById(id);
+        BeanUtils.copyNonNullProperties(news, fromDb);
 
-        try{
-            news = newsRepository.save(news);
-        }catch (Exception e){
+        try {
+            news = newsRepository.save(fromDb);
+        } catch (Exception e) {
+            log.warn(e.getMessage());
             throw new CannotSaveEntityException(e.getMessage());
         }
 
@@ -87,20 +88,22 @@ public class NewsServiceImpl implements NewsService {
         return news;
     }
 
-    @EditableByAuthor
+
+    @CanDeleteEntity
+    @StillCanEdit
     @Override
-    public void deleteNewsById(Long id) {
+    public void deleteById(Long id) {
         log.debug("Deleting news with id {}...", id);
 
-        News toDelete = findNewsById(id);
-        newsRepository.delete(toDelete);
+        News authorable = findById(id);
+        newsRepository.delete(authorable);
 
-        log.debug("Deleted news {}.", toDelete);
+        log.debug("Deleted news {}.", authorable);
     }
 
     @Override
     public List<Comment> findAllCommentsByNewsId(Long newsId) {
-        News news = findNewsById(newsId);
+        News news = findById(newsId);
         return new ArrayList<>(news.getComments());
     }
 
@@ -110,5 +113,15 @@ public class NewsServiceImpl implements NewsService {
 
         Specification<News> newsSpecification = NewsSpecification.withFilter(newsFilter);
         return newsRepository.findAll(newsSpecification, pageable).getContent();
+    }
+
+    @Override
+    public Instant getCreatedAtById(Long id) {
+        return findById(id).getCreatedAt();
+    }
+
+    @Override
+    public AppUser getAuthor(Long entityId) {
+        return findById(entityId).getAuthor();
     }
 }

@@ -7,6 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,7 +17,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode
 public class News implements Authorable{
 
     @Id
@@ -39,7 +39,7 @@ public class News implements Authorable{
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
     private Instant createdAt;
 
@@ -50,7 +50,6 @@ public class News implements Authorable{
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     private Set<Comment> comments = new HashSet<>();
 
     public void addComment(Comment comment){
@@ -63,9 +62,19 @@ public class News implements Authorable{
                 .collect(Collectors.toSet());
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof News news)) return false;
+        return Objects.equals(getId(), news.getId()) &&
+                Objects.equals(getHeading(), news.getHeading()) &&
+                Objects.equals(getContent(), news.getContent()) &&
+                Objects.equals(getAuthor(), news.getAuthor()) &&
+                Objects.equals(getCategory(), news.getCategory());
+    }
 
     @Override
-    public String getClassName() {
-        return this.getClass().getSimpleName();
+    public int hashCode() {
+        return Objects.hash(getId(), getHeading(), getContent(), getAuthor(), getCategory());
     }
 }

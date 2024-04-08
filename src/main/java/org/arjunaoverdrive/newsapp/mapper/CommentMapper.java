@@ -17,7 +17,6 @@ public interface CommentMapper {
 
     Comment toComment(CommentRequest request);
 
-    Comment toComment(Long id, CommentRequest request);
 
     @Mapping(target = "authorId", expression = "java(comment.getAuthor().getId())")
     @Mapping(target = "newsId", expression = "java(comment.getNews().getId())")

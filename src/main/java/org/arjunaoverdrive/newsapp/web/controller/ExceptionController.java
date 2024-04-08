@@ -1,5 +1,6 @@
 package org.arjunaoverdrive.newsapp.web.controller;
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.arjunaoverdrive.newsapp.exception.*;
 import org.arjunaoverdrive.newsapp.web.dto.ErrorResponse;
@@ -67,5 +68,19 @@ public class ExceptionController {
                 .toList();
         String errorMessage = String.join("; ", errorMessages);
         return ResponseEntity.badRequest().body(new ErrorResponse(errorMessage));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolation (ConstraintViolationException e){
+        log.warn(e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(IllegalAccessException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalAccess(IllegalAccessException e){
+        log.warn(e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse(e.getMessage()));
     }
 }
