@@ -1,7 +1,8 @@
-package org.arjunaoverdrive.newsapp.validation;
+package org.arjunaoverdrive.newsapp.validation.annotations;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
+import org.arjunaoverdrive.newsapp.validation.validators.NewsFilterValidator;
 
 import java.lang.annotation.*;
 

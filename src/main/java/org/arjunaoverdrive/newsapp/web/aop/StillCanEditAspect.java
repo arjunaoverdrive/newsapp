@@ -2,28 +2,46 @@ package org.arjunaoverdrive.newsapp.web.aop;
 
 import lombok.RequiredArgsConstructor;
 import org.arjunaoverdrive.newsapp.exception.UpdateStateException;
-import org.arjunaoverdrive.newsapp.model.Authorable;
+import org.arjunaoverdrive.newsapp.service.AuthorableService;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
-import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 
 @Aspect
 @Component
 @RequiredArgsConstructor
 public class StillCanEditAspect {
 
-    @Before(value = "@annotation(StillCanEdit)")
-    public void ifStillCanEdit(JoinPoint joinPoint){
-        Authorable authorable = (Authorable) joinPoint.getArgs()[0];
-        Duration duration = Duration.between(authorable.getCreatedAt(), Instant.now());
-        if(duration.toDays() > 1){
+    private final List<AuthorableService> services;
+
+    @Pointcut(value = "@annotation(StillCanEdit)")
+    public void canStillEditMarkedMethods() {
+    }
+
+    @Before(value = "canStillEditMarkedMethods()")
+    public void canStillEditAdvice(JoinPoint joinPoint) {
+        Class<?> aClass = joinPoint.getTarget().getClass();
+
+        AuthorableService service =
+                services.stream()
+                        .filter(s -> s.getType().equals(aClass))
+                        .findFirst().orElseThrow();
+
+        Long id = (Long) joinPoint.getArgs()[0];
+        Instant createdAt = service.getCreatedAtById(id);
+
+        Duration duration = Duration.between(createdAt, Instant.now());
+        if (duration.toDays() > 1) {
             throw new UpdateStateException(
-                    MessageFormat.format("Cannot update {0}: too much time passed since creation.", authorable.getClassName()));
+                    "Cannot update entity: too much time passed since creation."
+            );
+
         }
     }
 }

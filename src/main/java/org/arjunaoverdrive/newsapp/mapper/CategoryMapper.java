@@ -15,7 +15,11 @@ public interface CategoryMapper {
 
     Category toCategory(CategoryRequest request);
 
-    Category toCategory(Integer id, CategoryRequest request);
+    default Category toCategory(Integer id, CategoryRequest request){
+        Category category = toCategory(request);
+        category.setId(id);
+        return category;
+    };
 
     @Mapping(target = "news", expression = "java(category.getNews().size())")
     CategoryResponse toCategoryResponse(Category category);

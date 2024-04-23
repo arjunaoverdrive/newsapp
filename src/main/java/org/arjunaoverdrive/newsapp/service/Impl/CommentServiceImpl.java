@@ -10,13 +10,15 @@ import org.arjunaoverdrive.newsapp.model.Comment;
 import org.arjunaoverdrive.newsapp.model.News;
 import org.arjunaoverdrive.newsapp.service.CommentService;
 import org.arjunaoverdrive.newsapp.service.NewsService;
-import org.arjunaoverdrive.newsapp.service.user.UserService;
 import org.arjunaoverdrive.newsapp.utils.BeanUtils;
+import org.arjunaoverdrive.newsapp.web.aop.CanDeleteEntity;
 import org.arjunaoverdrive.newsapp.web.aop.EditableByAuthor;
 import org.arjunaoverdrive.newsapp.web.aop.StillCanEdit;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
+import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
@@ -25,12 +27,10 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
     private final NewsService newsService;
-    private final UserService userService;
-
 
 
     @Override
-    public Comment findCommentById(Long id) {
+    public Comment findById(Long id) {
         log.debug("Getting comment with id {}...", id);
         return commentRepository.findById(id)
                 .orElseThrow(() ->
@@ -40,13 +40,11 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public Comment createComment(Comment comment) {
         log.debug("Creating comment {}...", comment);
 
-        AppUser user = userService.findUserById(comment.getAuthor().getId());
-        comment.setAuthor(user);
-
-        News news = newsService.findNewsById(comment.getNews().getId());
+        News news = newsService.findById(comment.getNews().getId());
         comment.setNews(news);
 
         try{
@@ -58,13 +56,14 @@ public class CommentServiceImpl implements CommentService {
         return comment;
     }
 
+
     @EditableByAuthor
     @StillCanEdit
     @Override
-    public Comment updateComment(Comment comment) {
+    public Comment updateComment(Long id, Comment comment) {
         log.debug("Updating comment {}...", comment);
 
-        Comment fromDB = findCommentById(comment.getId());
+        Comment fromDB = findById(comment.getId());
         BeanUtils.copyNonNullProperties(comment, fromDB);
         fromDB.setText(comment.getText());
 
@@ -78,14 +77,25 @@ public class CommentServiceImpl implements CommentService {
         return fromDB;
     }
 
-    @EditableByAuthor
+    @CanDeleteEntity
+    @StillCanEdit
     @Override
-    public void deleteComment(Long id) {
+    public void deleteById(Long id) {
         log.debug("Deleting comment with id {}...", id);
 
-        Comment toDelete = findCommentById(id);
-        commentRepository.delete(toDelete);
+        Comment authorable = findById(id);
+        commentRepository.delete(authorable);
 
-        log.debug("Deleted comment {}.", toDelete);
+        log.debug("Deleted comment {}.", authorable);
+    }
+
+    @Override
+    public Instant getCreatedAtById(Long id) {
+        return findById(id).getCreatedAt();
+    }
+
+    @Override
+    public AppUser getAuthor(Long entityId) {
+        return findById(entityId).getAuthor();
     }
 }

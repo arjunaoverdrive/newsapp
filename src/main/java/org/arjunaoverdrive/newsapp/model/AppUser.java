@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Builder
 @ToString
-@EqualsAndHashCode
+
 public class AppUser {
 
     @Id
@@ -35,16 +36,21 @@ public class AppUser {
     @Column(nullable = false, length = 65)
     private String password;
 
+    @ElementCollection(targetClass = RoleType.class, fetch = FetchType.EAGER)
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "roles", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Set<RoleType> roles = new HashSet<>();
+
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     private Set<News> newsSet = new HashSet<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
     @Builder.Default
-    @EqualsAndHashCode.Exclude
     private Set<Comment> comments = new HashSet<>();
 
     public void addNews(News news){
@@ -65,5 +71,20 @@ public class AppUser {
         comments = comments.stream()
                 .takeWhile(c -> !c.getId().equals(commentId))
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AppUser user)) return false;
+        return Objects.equals(getFirstName(), user.getFirstName())
+                && Objects.equals(getLastName(), user.getLastName())
+                && Objects.equals(getEmail(), user.getEmail())
+                && Objects.equals(getPassword(), user.getPassword());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getFirstName(), getLastName(), getEmail(), getPassword());
     }
 }

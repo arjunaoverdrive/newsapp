@@ -14,11 +14,13 @@ import org.arjunaoverdrive.newsapp.web.dto.ErrorResponse;
 import org.arjunaoverdrive.newsapp.web.dto.category.CategoryListResponse;
 import org.arjunaoverdrive.newsapp.web.dto.category.CategoryRequest;
 import org.arjunaoverdrive.newsapp.web.dto.category.CategoryResponse;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -44,7 +46,7 @@ public class CategoryController {
     })
     @GetMapping
     public ResponseEntity<CategoryListResponse> findAll(
-            @PageableDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+            @PageableDefault(sort = "id", direction = Sort.Direction.ASC) @ParameterObject Pageable pageable) {
         return ResponseEntity.ok().body(categoryMapper.toCategoryListResponse(categoryService.findAllCategories(pageable)));
     }
 
@@ -90,6 +92,7 @@ public class CategoryController {
                     }
             )
     })
+    @PreAuthorize(value = "hasRole('ADMIN') or hasRole('MODERATOR')")
     @PostMapping
     public ResponseEntity<CategoryResponse> createCategory(@RequestBody @Valid CategoryRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -120,6 +123,7 @@ public class CategoryController {
                     }
             )
     })
+    @PreAuthorize(value = "hasRole('ADMIN') or hasRole('MODERATOR')")
     @PutMapping("/{id}")
     public ResponseEntity<CategoryResponse> updateCategory(@PathVariable Integer id, @RequestBody @Valid CategoryRequest request) {
         return ResponseEntity.accepted()
@@ -141,6 +145,7 @@ public class CategoryController {
                 }
         )
     })
+    @PreAuthorize(value = "hasRole('ADMIN') or hasRole('MODERATOR')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Integer id) {
         categoryService.deleteCategoryById(id);
